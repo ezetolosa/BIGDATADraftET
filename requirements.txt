@@ -1,0 +1,12 @@
+# requirements.txt
+pyspark==3.5.1
+pandas
+numpy
+matplotlib
+seaborn
+python-dotenv
+beautifulsoup4
+requests
+kaggle
+scikit-learn
+jupyter
