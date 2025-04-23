@@ -1,5 +1,5 @@
 # src/feature_engineering.py
-from pyspark.sql.functions import avg, when, col
+from pyspark.sql.functions import col, avg, sum, when
 from pyspark.sql.window import Window
 import logging
 
@@ -10,54 +10,57 @@ class FeatureEngineer:
 
     def create_team_features(self, df):
         try:
-            # Sort by date for rolling calculations
+            # Sort by date for time-based calculations
             df = df.orderBy("date")
 
-            # Add result indicators (for form)
-            df = df.withColumn("home_result",
-                when(col("home_team_goal") > col("away_team_goal"), 1.0)
-                .when(col("home_team_goal") < col("away_team_goal"), 0.0)
-                .otherwise(0.5))
+            # Create window specs
+            home_window = Window.partitionBy("home_team_long_name").orderBy("date").rowsBetween(-5, -1)
+            away_window = Window.partitionBy("away_team_long_name").orderBy("date").rowsBetween(-5, -1)
 
-            df = df.withColumn("away_result",
-                when(col("away_team_goal") > col("home_team_goal"), 1.0)
-                .when(col("away_team_goal") < col("home_team_goal"), 0.0)
-                .otherwise(0.5))
-
-            # Rolling windows
-            home_window = Window.partitionBy("home_team_api_id").orderBy("date").rowsBetween(-5, -1)
-            away_window = Window.partitionBy("away_team_api_id").orderBy("date").rowsBetween(-5, -1)
-
+            # Calculate rolling averages
             df = df.withColumn("home_team_goal_rolling_avg", avg("home_team_goal").over(home_window))
             df = df.withColumn("away_team_goal_rolling_avg", avg("away_team_goal").over(away_window))
 
-            df = df.withColumn("home_team_conceded_avg", avg("away_team_goal").over(home_window))
-            df = df.withColumn("away_team_conceded_avg", avg("home_team_goal").over(away_window))
+            # Calculate win streaks
+            df = df.withColumn(
+                "home_team_win_streak",
+                sum(when(col("home_team_goal") > col("away_team_goal"), 1).otherwise(0)).over(home_window)
+            )
+            df = df.withColumn(
+                "away_team_win_streak",
+                sum(when(col("away_team_goal") > col("home_team_goal"), 1).otherwise(0)).over(away_window)
+            )
 
-            df = df.withColumn("home_team_form", avg("home_result").over(home_window))
-            df = df.withColumn("away_team_form", avg("away_result").over(away_window))
+            # Calculate total goals scored
+            df = df.withColumn(
+                "home_team_goals_scored",
+                sum("home_team_goal").over(home_window)
+            )
+            df = df.withColumn(
+                "away_team_goals_scored",
+                sum("away_team_goal").over(away_window)
+            )
 
-            # Add more sophisticated features
-            
-            # Goal difference rolling average
-            df = df.withColumn("home_goal_diff_avg", 
-                col("home_team_goal_rolling_avg") - col("home_team_conceded_avg"))
-            df = df.withColumn("away_goal_diff_avg", 
-                col("away_team_goal_rolling_avg") - col("away_team_conceded_avg"))
+            # Calculate form (points per game)
+            df = df.withColumn(
+                "home_team_form",
+                avg(
+                    when(col("home_team_goal") > col("away_team_goal"), 3.0)
+                    .when(col("home_team_goal") == col("away_team_goal"), 1.0)
+                    .otherwise(0.0)
+                ).over(home_window)
+            )
+            df = df.withColumn(
+                "away_team_form",
+                avg(
+                    when(col("away_team_goal") > col("home_team_goal"), 3.0)
+                    .when(col("home_team_goal") == col("away_team_goal"), 1.0)
+                    .otherwise(0.0)
+                ).over(away_window)
+            )
 
-            # Win ratio in last 5 matches
-            df = df.withColumn("home_win_ratio", 
-                when(col("home_team_form") > 0.6, "HIGH")
-                .when(col("home_team_form") > 0.4, "MEDIUM")
-                .otherwise("LOW"))
-
-            # Clean up null values
-            fill_cols = [c for c in df.columns if "avg" in c or "form" in c]
-            df = df.fillna(0, subset=fill_cols)
-
-            self.logger.info("Feature engineering completed successfully")
             return df
 
         except Exception as e:
-            self.logger.error(f"Feature engineering error: {e}", exc_info=True)
+            self.logger.error(f"Feature engineering error: {e}")
             raise

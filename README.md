@@ -19,46 +19,122 @@ A comprehensive Big Data Analytics platform for soccer/football match prediction
   - Team comparison tool
   - Custom match scenario simulation
 
+## 📋 Installation & Setup
+
+1. **Create Virtual Environment**
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+2. **Install Dependencies**
+```powershell
+pip install -r requirements.txt
+```
+
+3. **Kaggle Data Setup**
+- Create a Kaggle account if you don't have one
+- Download your Kaggle API credentials (`kaggle.json`)
+- Place it in `%USERPROFILE%\.kaggle\`
+- Run the setup script:
+```powershell
+python setup_kaggle.py
+```
+
+4. **Extract Data Tables**
+- Run the extraction script to create CSV files:
+```powershell
+python extract_sqlite_to_csv.py
+```
+This will create the following CSV files in `data/raw/`:
+- `match.csv`: Match results and statistics
+- `team.csv`: Team information
+- `league.csv`: League details
+- `player.csv`: Player statistics
+
+5. **Run Analysis Pipeline**
+```powershell
+python main.py
+```
+
+## 📊 Data Processing Flow
+
+1. SQLite Database → CSV Files
+2. CSV Loading & Cleaning
+3. Feature Engineering
+4. Model Training
+5. Predictions & Analysis
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
 - Java 8+ (for PySpark)
-- Hadoop (optional for distributed processing)
+- Kaggle account and API key
 
 ### Installation
 
 1. **Clone & Setup Environment**
-```bash
+```powershell
 git clone https://github.com/yourusername/soccer-analytics.git
 cd soccer-analytics
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or
-.\venv\Scripts\activate  # Windows
+.\venv\Scripts\activate
 ```
 
 2. **Install Dependencies**
-```bash
+```powershell
 pip install -r requirements.txt
 ```
 
-3. **Configure Environment**
-```bash
-cp .env.example .env
-# Edit .env with your configuration
+3. **Configure Kaggle**
+- Create a Kaggle account if you don't have one
+- Go to your Kaggle account settings
+- Click "Create New API Token"
+- Download `kaggle.json` file
+- Place `kaggle.json` in `%USERPROFILE%\.kaggle\` directory
+
+4. **Download Dataset**
+```powershell
+python setup_kaggle.py
 ```
+This will download the European Soccer Database from Kaggle and place it in the correct directory.
 
 ### Running the Analysis
 
 1. **Data Pipeline Setup**
-```bash
-python setup_structure.py  # Creates necessary directories
-python main.py            # Runs ETL pipeline and trains models
+```powershell
+python main.py            # Processes data and trains models
 ```
 
 2. **Interactive Analysis**
-```bash
+```powershell
+python run_analysis.py    # Starts interactive analysis tool
+```
+
+## 🚀 Getting Started
+
+1. **Setup Environment**
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. **Configure Kaggle and Download Data**
+- Place your `kaggle.json` in `%USERPROFILE%\.kaggle\`
+- Run:
+```powershell
+python setup_kaggle.py  # Downloads database.sqlite
+```
+
+3. **Run Analysis Pipeline**
+```powershell
+python main.py  # Converts SQLite to CSV and processes data
+```
+
+4. **Interactive Analysis**
+```powershell
 python run_analysis.py
 ```
 
@@ -111,6 +187,96 @@ soccer-analytics/
 ├── main.py             # Pipeline orchestration
 ├── run_analysis.py     # Interactive analysis
 └── requirements.txt
+```
+
+## 🔄 Complete Pipeline Steps
+
+### 1. Initial Setup
+```powershell
+# Create and activate virtual environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# Install dependencies
+pip install matplotlib seaborn pandas pyspark kaggle
+```
+
+### 2. Project Structure Setup
+```powershell
+# Create directory structure
+python setup_structure.py
+```
+This creates:
+- `data/raw`
+- `data/processed`
+- `output/predictions`
+- `output/plots`
+- `output/plots/league_analysis`
+
+### 3. Data Download and Processing
+```powershell
+# Download Kaggle dataset
+python setup_kaggle.py
+
+# Convert SQLite to Parquet
+python extract_sqlite.py
+
+# Verify processing
+python test_processing.py
+```
+
+### 4. Running Analysis Tools
+
+#### Match Predictions
+```powershell
+python analysis/predictions/predict_local.py
+```
+- Select league
+- Choose teams
+- View head-to-head statistics
+- Get match predictions
+
+#### Team Analysis
+```powershell
+python analysis/team/soccer_insights.py
+```
+- Analyze single team performance
+- Compare multiple teams
+- View performance visualizations
+
+#### League Statistics
+```powershell
+python analysis/league/league_analysis.py
+```
+- View league-wide statistics
+- Team rankings
+- Goal distributions
+
+#### Form Analysis
+```powershell
+python analysis/form/form_analysis.py
+```
+- Track team form
+- Historical performance
+- Trend analysis
+
+### 5. Generated Outputs
+
+The analysis tools create visualizations in:
+- `output/plots/` - Team analysis plots
+- `output/plots/league_analysis/` - League statistics
+- `output/predictions/` - Processed match data
+
+### 6. Reset Pipeline
+To start fresh while keeping code:
+```powershell
+# Remove generated data
+rmdir /s /q "data\raw"
+rmdir /s /q "data\processed"
+rmdir /s /q "output\predictions"
+rmdir /s /q "output\plots"
+
+# Restart from step 2
 ```
 
 ## 📊 Data Sources
