@@ -301,6 +301,6 @@ The European Soccer Database is available on Kaggle under [CC0: Public Domain](h
 - **Oluwadamilola Popoola** - S536877@nwmissouri.edu
 - **Ezequiel Tolosa** - S556421@nwmissouri.edu
 
-Project Link: [https://github.com/yourusername/BIGDATADraftET](https://github.com/yourusername/BIGDATADraftET)
+Project Link: [https://github.com/yourusername/BIGDATADraftET](https://github.com/yourusername/BIGDATAProject)
 
 
