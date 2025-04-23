@@ -6,7 +6,8 @@
 - Oluwadamilola Popoola
 - Ezequiel Tolosa
 
-A Big Data Analytics platform for soccer match predictions and team performance analysis.
+## 📖 About
+This project leverages big data technologies to analyze European soccer matches and predict outcomes using machine learning. Built with PySpark and SQLite, it processes over 25,000 matches from top leagues to provide insights into team performance, historical trends, and match predictions. The platform combines historical data analysis with predictive modeling to offer comprehensive soccer analytics tools.
 
 ## 🎯 Core Features
 
@@ -185,6 +186,61 @@ The analysis tools create visualizations in:
 | form_home | Recent form of home team (last 5 matches) | FLOAT |
 | form_away | Recent form of away team (last 5 matches) | FLOAT |
 
+## 🌍 Available Leagues
+
+The dataset covers 11 major European leagues:
+1. Belgium Jupiler League
+2. England Premier League
+3. France Ligue 1
+4. Germany 1. Bundesliga
+5. Italy Serie A
+6. Netherlands Eredivisie
+7. Poland Ekstraklasa
+8. Portugal Liga ZON Sagres
+9. Scotland Premier League
+10. Spain LIGA BBVA
+11. Switzerland Super League
+
+## 💡 Example Prediction Interaction
+
+```plaintext
+# Sample Match Prediction Session
+
+Available Leagues:
+1. Italy Serie A
+[User selects Serie A]
+
+Teams in Italy Serie A:
+- Milan
+- Inter
+- Juventus
+- Roma
+[and 28 more teams...]
+
+[User selects Milan vs Inter]
+
+Head-to-Head Statistics (Milan vs Inter):
+Matches at this venue: 2
+Milan wins: 1
+Draws: 0
+Inter wins: 1
+
+Prediction Probabilities:
+Milan win: 41.18%
+Draw: 17.65%
+Inter win: 41.18%
+
+Predicted Outcome: Draw
+```
+
+### Interactive Features
+- League selection from 11 major European leagues
+- Complete team listings for each league
+- Home/Away venue selection
+- Head-to-head statistics
+- Win probability calculations
+- Form-based predictions
+
 ## 🔄 Reset Pipeline
 
 To start fresh while keeping code:
@@ -232,5 +288,19 @@ Key files:
 3. **File Permissions**
    - Run VS Code as administrator if needed
    - Check write permissions in output directories
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Dataset License
+The European Soccer Database is available on Kaggle under [CC0: Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
+
+## 📧 Contact
+
+- **Oluwadamilola Popoola** - S536877@nwmissouri.edu
+- **Ezequiel Tolosa** - S556421@nwmissouri.edu
+
+Project Link: [https://github.com/yourusername/BIGDATADraftET](https://github.com/yourusername/BIGDATADraftET)
 
 
