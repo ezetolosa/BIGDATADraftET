@@ -1,25 +1,49 @@
 # 🏆 Soccer Analytics & Prediction Platform
 
-A comprehensive Big Data Analytics platform for soccer/football match predictions and team performance analysis using PySpark, Machine Learning, and real-time data processing.
+# Big Data Analytics in Soccer: Performance Insights and Predictive Modeling
+
+**Authors:**
+- Oluwadamilola Popoola
+- Ezequiel Tolosa
+
+A Big Data Analytics platform for soccer match predictions and team performance analysis.
 
 ## 🎯 Core Features
 
-- **Match Outcome Prediction Engine**
-  - Win/Draw/Loss probability calculation
-  - Expected goals (xG) prediction
-  - Head-to-head performance analysis
+- **Match Data Processing**
+  - SQLite to CSV conversion
+  - Parquet data transformation
+  - Performance metrics calculation
 
-- **Team Performance Analytics**
-  - Historical performance trends
+- **Team Analysis**
+  - Historical match data
+  - Win/loss statistics
   - Goal scoring patterns
-  - Defensive effectiveness metrics
 
-- **Interactive Analysis**
-  - League selection
-  - Team comparison tool
-  - Custom match scenario simulation
+## 📋 Requirements
 
-## 📋 Installation & Setup
+### System Requirements
+- Python 3.8+
+- Java 8+ (for PySpark)
+- Windows 10 or higher
+- 8GB RAM minimum
+- Internet connection
+
+### Python Packages
+```powershell
+pyspark>=3.5.0
+pandas>=2.2.0
+scikit-learn>=1.4.0
+numpy>=1.24.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+python-dotenv>=1.0.0
+kaggle>=1.6.0
+jupyter>=1.0.0
+pyyaml>=6.0.1
+```
+
+## 🚀 Setup & Installation
 
 1. **Create Virtual Environment**
 ```powershell
@@ -32,215 +56,70 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-3. **Kaggle Data Setup**
-- Create a Kaggle account if you don't have one
-- Download your Kaggle API credentials (`kaggle.json`)
-- Place it in `%USERPROFILE%\.kaggle\`
-- Run the setup script:
+3. **Kaggle Configuration**
+- Create `.env` file with your Kaggle credentials:
+```plaintext
+KAGGLE_USERNAME=your_username
+KAGGLE_KEY=your_api_key
+```
+
+4. **Create Project Structure**
+```powershell
+python setup_structure.py
+```
+
+Creates:
+```
+project_root/
+├── data/
+│   ├── raw/             # SQLite database
+│   └── processed/       # CSV files
+├── output/
+│   ├── predictions/     # Parquet files
+│   └── plots/          # Visualizations
+├── src/
+│   ├── analysis/       
+│   └── utils/          
+├── logs/               
+└── models/             
+```
+
+## 📊 Data Pipeline
+
+1. **Download Dataset**
 ```powershell
 python setup_kaggle.py
 ```
 
-4. **Extract Data Tables**
-- Run the extraction script to create CSV files:
+2. **Convert SQLite to CSV**
 ```powershell
 python extract_sqlite_to_csv.py
 ```
-This will create the following CSV files in `data/raw/`:
-- `match.csv`: Match results and statistics
-- `team.csv`: Team information
-- `league.csv`: League details
-- `player.csv`: Player statistics
 
-5. **Run Analysis Pipeline**
+3. **Process Data**
 ```powershell
 python main.py
 ```
 
-## 📊 Data Processing Flow
+## 📊 Data Sources
 
-1. SQLite Database → CSV Files
-2. CSV Loading & Cleaning
-3. Feature Engineering
-4. Model Training
-5. Predictions & Analysis
+### Kaggle European Soccer Database
+- Historical match data spanning multiple seasons
+- Comprehensive team and player statistics
+- League-specific performance metrics
+- Over 25,000 matches from major European leagues
+- Source: [European Soccer Database](https://www.kaggle.com/datasets/hugomathien/soccer/data)
 
-## 🚀 Quick Start
+Database includes:
+- Match results and statistics
+- Team performance metrics
+- League classifications
+- Seasonal data from 2008 to 2016
+- Coverage of major European leagues
 
-### Prerequisites
-- Python 3.8+
-- Java 8+ (for PySpark)
-- Kaggle account and API key
+4. **Running Analysis Tools**
 
-### Installation
-
-1. **Clone & Setup Environment**
-```powershell
-git clone https://github.com/yourusername/soccer-analytics.git
-cd soccer-analytics
-python -m venv venv
-.\venv\Scripts\activate
-```
-
-2. **Install Dependencies**
-```powershell
-pip install -r requirements.txt
-```
-
-3. **Configure Kaggle**
-- Create a Kaggle account if you don't have one
-- Go to your Kaggle account settings
-- Click "Create New API Token"
-- Download `kaggle.json` file
-- Place `kaggle.json` in `%USERPROFILE%\.kaggle\` directory
-
-4. **Download Dataset**
-```powershell
-python setup_kaggle.py
-```
-This will download the European Soccer Database from Kaggle and place it in the correct directory.
-
-### Running the Analysis
-
-1. **Data Pipeline Setup**
-```powershell
-python main.py            # Processes data and trains models
-```
-
-2. **Interactive Analysis**
-```powershell
-python run_analysis.py    # Starts interactive analysis tool
-```
-
-## 🚀 Getting Started
-
-1. **Setup Environment**
-```powershell
-python -m venv venv
-.\venv\Scripts\activate
-python -m pip install -r requirements.txt
-```
-
-2. **Configure Kaggle and Download Data**
-- Place your `kaggle.json` in `%USERPROFILE%\.kaggle\`
-- Run:
-```powershell
-python setup_kaggle.py  # Downloads database.sqlite
-```
-
-```powershell
-python extract_sqlite_to_csv.py  # Downloads database.sqlite
-```
-
-3. **Run Analysis Pipeline**
-```powershell
-python main.py  # Converts SQLite to CSV and processes data
-```
-
-4. **Interactive Analysis**
-```powershell
-python run_analysis.py
-```
-
-## 💻 Usage Examples
-
-### Predict Match Outcome
-```python
-# Interactive prompt will ask for:
-1. Select League (e.g., "Premier League")
-2. Select Home Team
-3. Select Away Team
-4. Choose Analysis Type:
-   - Match Prediction
-   - Team Performance
-   - Historical Analysis
-```
-
-### Sample Output
-```
-Match Prediction: Manchester City vs Liverpool
---------------------------------
-Win Probability: 45%
-Draw Probability: 28%
-Loss Probability: 27%
-Expected Goals: City 2.1 - 1.8 Liverpool
-```
-
-## 🗄️ Project Structure
-
-```
-soccer-analytics/
-├── data/
-│   ├── raw/              # Original dataset files
-│   ├── processed/        # Cleaned and transformed data
-│   └── features/         # Engineered features
-├── src/
-│   ├── pipeline/
-│   │   ├── etl.py       # Data extraction and loading
-│   │   └── features.py  # Feature engineering
-│   ├── models/
-│   │   ├── predictor.py # ML models
-│   │   └── trainer.py   # Model training
-│   └── utils/
-│       ├── config.py    # Configuration
-│       └── helpers.py   # Utility functions
-├── notebooks/
-│   └── analysis.ipynb   # EDA and visualizations
-├── tests/
-│   └── test_models.py   # Unit tests
-├── main.py             # Pipeline orchestration
-├── run_analysis.py     # Interactive analysis
-└── requirements.txt
-```
-
-## 🔄 Complete Pipeline Steps
-
-### 1. Initial Setup
-```powershell
-# Create and activate virtual environment
-python -m venv venv
-.\venv\Scripts\activate
-```
-
-# Install dependencies
-```powershell
-python -m pip install -r requirements.txt
-```
-
-### 2. Project Structure Setup
-```powershell
-# Create directory structure
-python setup_structure.py
-```
-This creates:
-- `data/raw`
-- `data/processed`
-- `output/predictions`
-- `output/plots`
-- `output/plots/league_analysis`
-
-### 3. Data Download and Processing
-```powershell
-# Download Kaggle dataset
-python setup_kaggle.py
-
-# Convert SQLite to Parquet
-python extract_sqlite.py
-
-# Verify processing
-python test_processing.py
-```
-# main
-```powershell
-python main.py
-```
-# RunAnalysis
-```powershell
-python run_analysis.py
-```
-### 4. Running Analysis Tools
-
-#### Match Predictions
+**Match Predictions**
 ```powershell
 python analysis/predictions/predict_local.py
 ```
@@ -249,7 +128,7 @@ python analysis/predictions/predict_local.py
 - View head-to-head statistics
 - Get match predictions
 
-#### Team Analysis
+**Team Analysis**
 ```powershell
 python analysis/team/soccer_insights.py
 ```
@@ -257,7 +136,7 @@ python analysis/team/soccer_insights.py
 - Compare multiple teams
 - View performance visualizations
 
-#### League Statistics
+**League Statistics**
 ```powershell
 python analysis/league/league_analysis.py
 ```
@@ -265,7 +144,7 @@ python analysis/league/league_analysis.py
 - Team rankings
 - Goal distributions
 
-#### Form Analysis
+**Form Analysis**
 ```powershell
 python analysis/form/form_analysis.py
 ```
@@ -273,14 +152,41 @@ python analysis/form/form_analysis.py
 - Historical performance
 - Trend analysis
 
-### 5. Generated Outputs
+5. **Generated Outputs**
 
 The analysis tools create visualizations in:
 - `output/plots/` - Team analysis plots
 - `output/plots/league_analysis/` - League statistics
 - `output/predictions/` - Processed match data
 
-### 6. Reset Pipeline
+## 📚 Data Dictionary
+
+### Integrated Dataset Columns
+
+| Column Name | Description | Type |
+|------------|-------------|------|
+| date | Match date | DATETIME |
+| home_team_api_id | Unique identifier for home team | INTEGER |
+| away_team_api_id | Unique identifier for away team | INTEGER |
+| home_team_goal | Goals scored by home team | INTEGER |
+| away_team_goal | Goals scored by away team | INTEGER |
+| home_team_long_name | Full name of home team | STRING |
+| away_team_long_name | Full name of away team | STRING |
+| league_name | Name of the league | STRING |
+| match_outcome | Result (0=home win, 1=draw, 2=away win) | INTEGER |
+
+### Derived Features
+| Feature Name | Description | Type |
+|-------------|-------------|------|
+| goal_difference | Goal difference (home - away) | INTEGER |
+| total_goals | Total goals in match | INTEGER |
+| points_home | Points earned by home team | INTEGER |
+| points_away | Points earned by away team | INTEGER |
+| form_home | Recent form of home team (last 5 matches) | FLOAT |
+| form_away | Recent form of away team (last 5 matches) | FLOAT |
+
+## 🔄 Reset Pipeline
+
 To start fresh while keeping code:
 ```powershell
 # Remove generated data
@@ -289,44 +195,42 @@ rmdir /s /q "data\processed"
 rmdir /s /q "output\predictions"
 rmdir /s /q "output\plots"
 
-# Restart from step 2
+# Restart pipeline
+python setup_structure.py
+python setup_kaggle.py
+python extract_sqlite_to_csv.py
+python main.py
 ```
-
-## 📊 Data Sources
-
-- Historical match data
-- Player statistics
-- Team performance metrics
-- League standings
-- Head-to-head records
 
 ## 🔧 Technical Stack
 
 - **Data Processing**: PySpark, Pandas
-- **Machine Learning**: Scikit-learn, PySpark ML
-- **Visualization**: Seaborn, Matplotlib
-- **Storage**: HDFS/Local Storage
-- **API Integration**: RESTful APIs
+- **Storage**: SQLite, Parquet
+- **Analysis**: Python
+- **Visualization**: Matplotlib, Seaborn
 
-## 🤝 Contributing
+## 📝 Project Structure
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Push to the branch
-5. Open a Pull Request
+Key files:
+- `setup_structure.py`: Creates directory structure
+- `setup_kaggle.py`: Downloads dataset
+- `extract_sqlite_to_csv.py`: Converts database to CSV
+- `main.py`: Processes data
+- `test_processing.py`: Validates pipeline
 
-## 📝 License
+## ⚠️ Common Issues
 
-MIT License - See LICENSE file for details
+1. **Python Worker Connection**
+   - Ensure Java is installed
+   - Check Python environment
+   - Verify PySpark configuration
 
-## 👥 Authors
+2. **Kaggle Authentication**
+   - Verify credentials in `.env`
+   - Accept dataset terms on Kaggle website
 
-- Your Name
-- Contributors
-
-## 📮 Contact
-
-For questions or feedback, please open an issue or contact [your-email]
+3. **File Permissions**
+   - Run VS Code as administrator if needed
+   - Check write permissions in output directories
 
 
