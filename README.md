@@ -54,7 +54,7 @@ python -m venv venv
 
 2. **Install Dependencies**
 ```powershell
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 3. **Kaggle Configuration**
@@ -100,6 +100,11 @@ python extract_sqlite_to_csv.py
 3. **Process Data**
 ```powershell
 python main.py
+```
+
+4. **Run Analysis**
+```powershell
+python run_analysis.py
 ```
 
 ## 📊 Data Sources
@@ -201,6 +206,36 @@ The dataset covers 11 major European leagues:
 10. Spain LIGA BBVA
 11. Switzerland Super League
 
+## 📊 Data Distribution
+
+### League Statistics (2008-2016)
+
+| League Name | Matches | Seasons |
+|------------|---------|---------|
+| France Ligue 1 | 3,040 | 8 |
+| England Premier League | 3,040 | 8 |
+| Spain LIGA BBVA | 3,040 | 8 |
+| Italy Serie A | 3,017 | 8 |
+| Netherlands Eredivisie | 2,448 | 8 |
+| Germany 1. Bundesliga | 2,448 | 8 |
+| Portugal Liga ZON Sagres | 2,052 | 7 |
+| Poland Ekstraklasa | 1,920 | 8 |
+| Scotland Premier League | 1,824 | 8 |
+| Belgium Jupiler League | 1,728 | 6 |
+| Switzerland Super League | 1,422 | 6 |
+**Total Matches: 25,979**
+
+### Data Quality Metrics
+- Complete match records: 25,979
+- Time period: 2008-2016 (8 seasons)
+- Leagues covered: 11 major European leagues
+- Teams analyzed: ~300 unique teams
+- Data completeness: 100% for core metrics
+  - Match dates
+  - Team identifiers
+  - Goals scored
+  - League information
+
 ## 💡 Example Prediction Interaction
 
 ```plaintext
@@ -256,6 +291,7 @@ python setup_structure.py
 python setup_kaggle.py
 python extract_sqlite_to_csv.py
 python main.py
+python run_analysis.py
 ```
 
 ## 🔧 Technical Stack

@@ -11,6 +11,7 @@ def create_project_structure():
         'data/processed',
         'output/predictions',
         'output/plots',
+        'output/plots/team_insights',  # Correct folder name
         'output/plots/league_analysis',
         'output/plots/form_analysis',
         'analysis/predictions',

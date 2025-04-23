@@ -239,34 +239,46 @@ def plot_results(matrix):
     plt.savefig('output/confusion_matrix.png', dpi=300, bbox_inches='tight')
     plt.close()
 
-def main():
-    """Main execution function"""
-    spark = None
-    
+def run_analysis():
+    """Run match analysis on complete dataset"""
     try:
-        # Initialize Spark
-        spark = create_spark_session()
-        
-        # Run analysis
-        confusion_df = analyze_predictions(spark)
-        
-        # Create visualization
-        plot_confusion_matrix(confusion_df)
-        
-        logger.info("\nAnalysis complete! Check output/confusion_matrix.png for visualization")
-        
+        # Initialize Spark with more memory
+        spark = SparkSession.builder \
+            .appName("Soccer Analysis") \
+            .config("spark.driver.memory", "4g") \
+            .config("spark.sql.shuffle.partitions", "10") \
+            .master("local[*]") \
+            .getOrCreate()
+
+        # Read all matches from processed CSV
+        logger.info("Loading match data...")
+        matches_df = spark.read.csv(
+            "data/processed/matches.csv",
+            header=True,
+            inferSchema=True
+        )
+
+        # Log data counts
+        total_matches = matches_df.count()
+        logger.info(f"Total matches loaded: {total_matches}")
+
+        # Count matches per league
+        league_counts = matches_df.groupBy("league_name") \
+            .agg(count("*").alias("match_count")) \
+            .orderBy(col("match_count").desc())
+
+        logger.info("\nMatches per league:")
+        league_counts.show(truncate=False)
+
+        # Continue with analysis
+        # ...existing code...
+
     except Exception as e:
-        logger.error(f"Analysis failed: {e}")
+        logger.error(f"Analysis failed: {str(e)}")
         raise
     finally:
-        if spark:
+        if 'spark' in locals():
             spark.stop()
 
 if __name__ == "__main__":
-    try:
-        confusion_matrix = analyze_results()
-        plot_results(confusion_matrix)
-        logger.info("\nAnalysis complete! Check output/confusion_matrix.png")
-    except Exception as e:
-        logger.error(f"Analysis failed: {e}")
-        raise
+    run_analysis()

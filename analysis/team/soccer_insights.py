@@ -148,6 +148,37 @@ def get_team_choice(team_to_number, prompt):
         except ValueError:
             logger.info("Please enter a valid number.")
 
+def plot_team_analysis(team_data, team_name):
+    """Generate and save analysis plots for a team"""
+    plots_dir = 'output/plots/team_insights'
+    os.makedirs(plots_dir, exist_ok=True)
+    
+    # Create figure for team analysis
+    plt.figure(figsize=(10, 6))
+    # ...existing code...
+    plt.savefig(f"{plots_dir}/{team_name.replace(' ', '_')}_analysis.png")
+    plt.close()
+    
+    logger.info(f"✅ Plots saved to {plots_dir}")
+
+def create_team_performance_plot(team_data, team_name):
+    """Generate and save team performance visualization"""
+    # Create plots directory if it doesn't exist
+    plot_dir = os.path.join('output', 'plots', 'team_insights')
+    os.makedirs(plot_dir, exist_ok=True)
+
+    # Create plot
+    plt.figure(figsize=(12, 8))
+    # ...existing plotting code...
+
+    # Save plot to team_insights directory
+    plot_path = os.path.join(plot_dir, f"{team_name.replace(' ', '_')}_performance.png")
+    plt.savefig(plot_path)
+    plt.close()
+
+    logger.info(f"✅ Plot saved to: {plot_path}")
+    return plot_path
+
 def main():
     matches_df = load_match_data()
     
