@@ -6,6 +6,7 @@ import logging
 class FeatureEngineer:
     def __init__(self, spark_session):
         self.spark = spark_session
+        self.logger = logging.getLogger(__name__)
 
     def create_team_features(self, df):
         try:
@@ -36,8 +37,27 @@ class FeatureEngineer:
             df = df.withColumn("home_team_form", avg("home_result").over(home_window))
             df = df.withColumn("away_team_form", avg("away_result").over(away_window))
 
+            # Add more sophisticated features
+            
+            # Goal difference rolling average
+            df = df.withColumn("home_goal_diff_avg", 
+                col("home_team_goal_rolling_avg") - col("home_team_conceded_avg"))
+            df = df.withColumn("away_goal_diff_avg", 
+                col("away_team_goal_rolling_avg") - col("away_team_conceded_avg"))
+
+            # Win ratio in last 5 matches
+            df = df.withColumn("home_win_ratio", 
+                when(col("home_team_form") > 0.6, "HIGH")
+                .when(col("home_team_form") > 0.4, "MEDIUM")
+                .otherwise("LOW"))
+
+            # Clean up null values
+            fill_cols = [c for c in df.columns if "avg" in c or "form" in c]
+            df = df.fillna(0, subset=fill_cols)
+
+            self.logger.info("Feature engineering completed successfully")
             return df
 
         except Exception as e:
-            logging.error(f"Feature engineering error: {e}")
+            self.logger.error(f"Feature engineering error: {e}", exc_info=True)
             raise

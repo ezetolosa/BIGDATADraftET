@@ -1,89 +1,153 @@
-# ⚽ Big Data Soccer Analytics Project
+# 🏆 Soccer Analytics & Prediction Platform
 
-This project uses PySpark to build an end-to-end pipeline for analyzing and predicting soccer match outcomes and performance KPIs based on historical data.
+A comprehensive Big Data Analytics platform for soccer/football match predictions and team performance analysis using PySpark, Machine Learning, and real-time data processing.
 
----
+## 🎯 Core Features
 
-## 📦 Features
+- **Match Outcome Prediction Engine**
+  - Win/Draw/Loss probability calculation
+  - Expected goals (xG) prediction
+  - Head-to-head performance analysis
 
-- Ingests data from Kaggle and optionally scrapes FBref
-- Cleans and processes raw match data
-- Extracts features like rolling goal averages, goals conceded, and form
-- Trains two models:
-  - Classification model to predict match outcomes (win/draw/loss)
-  - Regression model to predict number of goals
-- Interactive script for analyzing specific teams or leagues
-- Outputs predictions with probabilities and goal estimates
+- **Team Performance Analytics**
+  - Historical performance trends
+  - Goal scoring patterns
+  - Defensive effectiveness metrics
 
----
+- **Interactive Analysis**
+  - League selection
+  - Team comparison tool
+  - Custom match scenario simulation
 
-## 🛠 How to Run
+## 🚀 Quick Start
 
-### 1. Clone the repo & install dependencies
+### Prerequisites
+- Python 3.8+
+- Java 8+ (for PySpark)
+- Hadoop (optional for distributed processing)
+
+### Installation
+
+1. **Clone & Setup Environment**
 ```bash
-git clone https://github.com/your-username/BigDataProject.git
-cd BigDataProject
+git clone https://github.com/yourusername/soccer-analytics.git
+cd soccer-analytics
 python -m venv venv
-source venv/bin/activate  # or .\venv\Scripts\activate on Windows
+source venv/bin/activate  # Linux/Mac
+# or
+.\venv\Scripts\activate  # Windows
+```
+
+2. **Install Dependencies**
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Set up environment variables
-Create a `.env` file based on `.env.example` for Kaggle/FBref keys.
-
-### 3. Run the full pipeline
+3. **Configure Environment**
 ```bash
-python main.py
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-### 4. Run the interactive analysis tool
+### Running the Analysis
+
+1. **Data Pipeline Setup**
+```bash
+python setup_structure.py  # Creates necessary directories
+python main.py            # Runs ETL pipeline and trains models
+```
+
+2. **Interactive Analysis**
 ```bash
 python run_analysis.py
 ```
-You can:
-- Select a league and team
-- Choose to analyze KPIs
-- Predict outcomes or goals
 
----
+## 💻 Usage Examples
 
-## 📊 Example Output
+### Predict Match Outcome
+```python
+# Interactive prompt will ask for:
+1. Select League (e.g., "Premier League")
+2. Select Home Team
+3. Select Away Team
+4. Choose Analysis Type:
+   - Match Prediction
+   - Team Performance
+   - Historical Analysis
+```
 
-| Home Team | Away Team | Win % | Draw % | Away Win % | Goals |
-|-----------|-----------|--------|---------|-------------|--------|
-| Barcelona | Sevilla   | 65.2%  | 18.7%   | 16.1%       | 2.1–1.3 |
+### Sample Output
+```
+Match Prediction: Manchester City vs Liverpool
+--------------------------------
+Win Probability: 45%
+Draw Probability: 28%
+Loss Probability: 27%
+Expected Goals: City 2.1 - 1.8 Liverpool
+```
 
----
-
-## 📁 Project Structure
+## 🗄️ Project Structure
 
 ```
-BigDataProject/
-├── main.py                  # Runs the full ETL + model pipeline
-├── run_analysis.py          # Interactive user analysis + prediction
-├── src/
-│   ├── data_processing.py
-│   ├── feature_engineering.py
-│   ├── model_training.py
-│   └── fbref_ingest.py (optional)
-├── models/                  # Saved trained models
+soccer-analytics/
 ├── data/
-│   ├── raw/                 # Kaggle/raw files
-│   └── processed/           # Feature-enriched data
-├── output/                  # Predictions CSVs
-├── logs/                    # Logs
-├── .env.example             # Sample environment vars
-├── requirements.txt         # Python dependencies
-└── README.md
+│   ├── raw/              # Original dataset files
+│   ├── processed/        # Cleaned and transformed data
+│   └── features/         # Engineered features
+├── src/
+│   ├── pipeline/
+│   │   ├── etl.py       # Data extraction and loading
+│   │   └── features.py  # Feature engineering
+│   ├── models/
+│   │   ├── predictor.py # ML models
+│   │   └── trainer.py   # Model training
+│   └── utils/
+│       ├── config.py    # Configuration
+│       └── helpers.py   # Utility functions
+├── notebooks/
+│   └── analysis.ipynb   # EDA and visualizations
+├── tests/
+│   └── test_models.py   # Unit tests
+├── main.py             # Pipeline orchestration
+├── run_analysis.py     # Interactive analysis
+└── requirements.txt
 ```
 
----
+## 📊 Data Sources
+
+- Historical match data
+- Player statistics
+- Team performance metrics
+- League standings
+- Head-to-head records
+
+## 🔧 Technical Stack
+
+- **Data Processing**: PySpark, Pandas
+- **Machine Learning**: Scikit-learn, PySpark ML
+- **Visualization**: Seaborn, Matplotlib
+- **Storage**: HDFS/Local Storage
+- **API Integration**: RESTful APIs
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📝 License
+
+MIT License - See LICENSE file for details
 
 ## 👥 Authors
-- Ezequiel Tolosa
-- Oluwadamilola Popoola
 
-## 📘 License
-MIT License
+- Your Name
+- Contributors
 
- 
+## 📮 Contact
+
+For questions or feedback, please open an issue or contact [your-email]
+
+

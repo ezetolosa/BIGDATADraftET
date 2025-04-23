@@ -1,4 +1,5 @@
 # src/model_training.py
+from pyspark.sql.functions import when, col
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.classification import RandomForestClassifier

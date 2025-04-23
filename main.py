@@ -32,7 +32,12 @@ def main():
 
         logger.info("Generating features...")
         featured_data = feature_engineer.create_team_features(match_data)
+
+        # Save as optimized Spark Parquet
         featured_data.write.mode("overwrite").parquet("data/processed/featured_matches.parquet")
+
+        # Also save as CSV for preview or inspection
+        featured_data.toPandas().to_csv("output/featured_matches.csv", index=False)
 
         logger.info("Training match result classifier...")
         clf_model, test_data = model_trainer.train_result_classifier(featured_data)

@@ -1,0 +1,16 @@
+data:
+  input_path: "data/raw/match.csv"
+  processed_path: "data/processed/"
+  
+model:
+  rolling_window: 5
+  min_matches: 3
+  features:
+    - home_team_goal_rolling_avg
+    - away_team_goal_rolling_avg
+    - home_team_form
+    - away_team_form
+
+visualization:
+  style: "darkgrid"
+  palette: "deep"
