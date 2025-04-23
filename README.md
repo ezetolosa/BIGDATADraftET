@@ -200,9 +200,11 @@ soccer-analytics/
 # Create and activate virtual environment
 python -m venv venv
 .\venv\Scripts\activate
+```
 
 # Install dependencies
-pip install matplotlib seaborn pandas pyspark kaggle
+```powershell
+python -m pip install -r requirements.txt
 ```
 
 ### 2. Project Structure Setup
