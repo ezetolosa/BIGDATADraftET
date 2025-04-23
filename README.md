@@ -224,7 +224,14 @@ python extract_sqlite.py
 # Verify processing
 python test_processing.py
 ```
-
+# main
+```powershell
+python main.py
+```
+# RunAnalysis
+```powershell
+python run_analysis.py
+```
 ### 4. Running Analysis Tools
 
 #### Match Predictions
