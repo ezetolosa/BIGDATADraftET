@@ -4,10 +4,16 @@ from pyspark.sql import SparkSession
 import logging
 import os
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class DataProcessor:
-    def __init__(self, spark_session):
-        self.spark = spark_session
-        self.logger = logging.getLogger(__name__)  # Add proper logger
+    def __init__(self, spark_session=None):
+        self.spark = spark_session or SparkSession.builder \
+            .appName("Soccer Data Processing") \
+            .config("spark.driver.memory", "1g") \
+            .master("local[*]") \
+            .getOrCreate()
 
     def validate_data(self, df):
         """Validate input data quality"""
@@ -90,4 +96,33 @@ class DataProcessor:
 
         except Exception as e:
             self.logger.error(f"Data processing error: {e}", exc_info=True)
+            raise
+
+    def load_and_clean_match_data(self):
+        """Load and clean match data from processed CSV"""
+        try:
+            # Read from the correct processed CSV file
+            matches_df = self.spark.read.csv(
+                "data/processed/matches.csv", 
+                header=True, 
+                inferSchema=True
+            )
+            
+            # Add match outcome column if not present
+            if 'match_outcome' not in matches_df.columns:
+                matches_df = matches_df.withColumn(
+                    'match_outcome',
+                    when(col('home_team_goal') > col('away_team_goal'), 0)
+                    .when(col('home_team_goal') == col('away_team_goal'), 1)
+                    .otherwise(2)
+                )
+            
+            # Save processed data to predictions
+            matches_df.write.mode('overwrite').parquet('output/predictions')
+            
+            logger.info("✅ Data processed and saved successfully")
+            return matches_df
+            
+        except Exception as e:
+            logger.error(f"Data processing error: {str(e)}")
             raise

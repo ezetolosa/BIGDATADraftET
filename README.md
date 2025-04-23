@@ -118,7 +118,7 @@ python run_analysis.py    # Starts interactive analysis tool
 ```powershell
 python -m venv venv
 .\venv\Scripts\activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 2. **Configure Kaggle and Download Data**
@@ -126,6 +126,10 @@ pip install -r requirements.txt
 - Run:
 ```powershell
 python setup_kaggle.py  # Downloads database.sqlite
+```
+
+```powershell
+python extract_sqlite_to_csv.py  # Downloads database.sqlite
 ```
 
 3. **Run Analysis Pipeline**

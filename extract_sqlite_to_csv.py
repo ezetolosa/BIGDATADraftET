@@ -1,23 +1,15 @@
 # extract_sqlite_to_csv.py – Extract tables from database.sqlite to CSV and Parquet
 import sqlite3
 import pandas as pd
-from pyspark.sql import SparkSession
-import logging
 import os
+import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def extract_and_transform():
-    """Extract data from SQLite and transform to CSV and Parquet"""
+    """Extract data from SQLite and transform to CSV"""
     try:
-        # Create Spark session
-        spark = SparkSession.builder \
-            .appName("Extract SQLite") \
-            .config("spark.driver.memory", "1g") \
-            .master("local[*]") \
-            .getOrCreate()
-
         # Connect to SQLite
         logger.info("Connecting to SQLite database...")
         conn = sqlite3.connect('data/raw/database.sqlite')
@@ -31,29 +23,44 @@ def extract_and_transform():
                 m.away_team_api_id,
                 m.home_team_goal,
                 m.away_team_goal,
-                t.team_long_name AS home_team_name,
-                t2.team_long_name AS away_team_name
+                t1.team_long_name as home_team_long_name,
+                t2.team_long_name as away_team_long_name,
+                l.name as league_name
             FROM Match m
-            JOIN Team t ON m.home_team_api_id = t.team_api_id
+            JOIN Team t1 ON m.home_team_api_id = t1.team_api_id
             JOIN Team t2 ON m.away_team_api_id = t2.team_api_id
+            JOIN League l ON m.league_id = l.id
         """, conn)
         
-        # Save to CSV
-        output_path_csv = os.path.join("data/raw", "matches.csv")
-        matches.to_csv(output_path_csv, index=False)
-        logger.info(f"Extracted match data to {output_path_csv}")
+        # Add match outcome column
+        matches['match_outcome'] = matches.apply(
+            lambda row: 0 if row['home_team_goal'] > row['away_team_goal']
+                       else 1 if row['home_team_goal'] == row['away_team_goal']
+                       else 2, axis=1
+        )
         
-        # Save to Parquet
-        output_path_parquet = os.path.join("data/raw", "matches.parquet")
-        spark_df = spark.createDataFrame(matches)
-        spark_df.write.parquet(output_path_parquet)
-        logger.info(f"Extracted match data to {output_path_parquet}")
+        # Create output directory
+        os.makedirs('data/processed', exist_ok=True)
+        
+        # Save to CSV
+        csv_path = 'data/processed/matches.csv'
+        matches.to_csv(csv_path, index=False)
+        logger.info(f"✅ CSV saved to {csv_path}")
+        
+        logger.info(f"✅ Successfully processed {len(matches)} matches")
+        return True
         
     except Exception as e:
-        logger.error(f"Error extracting match data: {e}")
+        logger.error(f"❌ Error during extraction: {str(e)}")
+        return False
+        
     finally:
-        conn.close()
-        logger.info("Extraction complete!")
+        if 'conn' in locals():
+            conn.close()
 
 if __name__ == "__main__":
-    extract_and_transform()
+    success = extract_and_transform()
+    if success:
+        logger.info("✅ Data extraction complete")
+    else:
+        logger.error("❌ Data extraction failed")

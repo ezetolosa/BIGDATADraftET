@@ -63,7 +63,7 @@ def cleanup_directories():
         ensure_directory(directory)
 
 def main():
-    # Setup logging
+    """Main pipeline execution"""
     setup_logging()
     logger = logging.getLogger(__name__)
 
