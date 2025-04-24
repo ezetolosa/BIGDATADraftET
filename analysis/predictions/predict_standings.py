@@ -29,55 +29,58 @@ class LeaguePredictor:
 
     def predict_season(self, league_name):
         """Predict standings for next season with home/away matches"""
-        # Load historical data
+        # Load and convert data properly
+        logger.info("Loading match data...")
         df = self.load_data()
-        league_data = df.filter(df.league_name == league_name).toPandas()
-
-        # Get unique teams
+        
+        logger.info("Processing data for analysis...")
+        pandas_df = df.filter(f"league_name = '{league_name}'").toPandas()
+        pandas_df['date'] = pd.to_datetime(pandas_df['date'])
+        
+        current_date = pandas_df['date'].max()
+        three_years_ago = current_date - pd.DateOffset(years=3)
+        recent_data = pandas_df[pandas_df['date'] >= three_years_ago]
+        
+        logger.info(f"Analyzing matches from {three_years_ago.strftime('%Y-%m-%d')} to {current_date.strftime('%Y-%m-%d')}")
+        
+        # Get teams and calculate their averages
         teams = pd.concat([
-            league_data['home_team_long_name'],
-            league_data['away_team_long_name']
+            recent_data['home_team_long_name'],
+            recent_data['away_team_long_name']
         ]).unique()
 
-        # Initialize team stats
+        # Initialize team stats with all required fields
         team_stats = {}
         for team in teams:
-            home_games = league_data[league_data['home_team_long_name'] == team]
-            away_games = league_data[league_data['away_team_long_name'] == team]
-
-            # Calculate historical performance
-            home_goals_avg = home_games['home_team_goal'].mean() or 0
-            away_goals_avg = away_games['away_team_goal'].mean() or 0
-            home_conceded_avg = home_games['away_team_goal'].mean() or 0
-            away_conceded_avg = away_games['home_team_goal'].mean() or 0
-
+            home_games = recent_data[recent_data['home_team_long_name'] == team]
+            away_games = recent_data[recent_data['away_team_long_name'] == team]
+            
+            # Calculate averages
+            home_goals_avg = home_games['home_team_goal'].mean() if len(home_games) > 0 else 0
+            away_goals_avg = away_games['away_team_goal'].mean() if len(away_games) > 0 else 0
+            
             team_stats[team] = {
-                'home_goals_avg': home_goals_avg,
-                'away_goals_avg': away_goals_avg,
-                'home_conceded_avg': home_conceded_avg,
-                'away_conceded_avg': away_conceded_avg,
                 'predicted_points': 0,
                 'games_played': 0,
                 'wins': 0,
                 'draws': 0,
                 'losses': 0,
                 'goals_for': 0,
-                'goals_against': 0
+                'goals_against': 0,
+                'home_goals_avg': home_goals_avg,
+                'away_goals_avg': away_goals_avg,
+                'form': 0.0
             }
 
-        # Simulate full season - each team plays against every other team twice
+        # Now the simulation code can safely access 'home_goals_avg'
         for home_team in teams:
             for away_team in teams:
                 if home_team != away_team:
-                    # First leg (home)
-                    home_score = np.random.poisson(
-                        team_stats[home_team]['home_goals_avg'] * 1.1
-                    )
-                    away_score = np.random.poisson(
-                        team_stats[away_team]['away_goals_avg'] * 0.9
-                    )
-
-                    # Update stats for first leg
+                    # Simulate match using the averages
+                    home_score = np.random.poisson(team_stats[home_team]['home_goals_avg'] * 1.1)
+                    away_score = np.random.poisson(team_stats[away_team]['away_goals_avg'] * 0.9)
+                    
+                    # Update stats
                     team_stats[home_team]['games_played'] += 1
                     team_stats[away_team]['games_played'] += 1
                     team_stats[home_team]['goals_for'] += home_score
@@ -93,36 +96,6 @@ class LeaguePredictor:
                         team_stats[away_team]['predicted_points'] += 3
                         team_stats[away_team]['wins'] += 1
                         team_stats[home_team]['losses'] += 1
-                    else:
-                        team_stats[home_team]['predicted_points'] += 1
-                        team_stats[away_team]['predicted_points'] += 1
-                        team_stats[home_team]['draws'] += 1
-                        team_stats[away_team]['draws'] += 1
-
-                    # Second leg (away)
-                    away_score_2 = np.random.poisson(
-                        team_stats[home_team]['away_goals_avg'] * 0.9
-                    )
-                    home_score_2 = np.random.poisson(
-                        team_stats[away_team]['home_goals_avg'] * 1.1
-                    )
-
-                    # Update stats for second leg
-                    team_stats[home_team]['games_played'] += 1
-                    team_stats[away_team]['games_played'] += 1
-                    team_stats[home_team]['goals_for'] += away_score_2
-                    team_stats[home_team]['goals_against'] += home_score_2
-                    team_stats[away_team]['goals_for'] += home_score_2
-                    team_stats[away_team]['goals_against'] += away_score_2
-
-                    if home_score_2 > away_score_2:
-                        team_stats[away_team]['predicted_points'] += 3
-                        team_stats[away_team]['wins'] += 1
-                        team_stats[home_team]['losses'] += 1
-                    elif home_score_2 < away_score_2:
-                        team_stats[home_team]['predicted_points'] += 3
-                        team_stats[home_team]['wins'] += 1
-                        team_stats[away_team]['losses'] += 1
                     else:
                         team_stats[home_team]['predicted_points'] += 1
                         team_stats[away_team]['predicted_points'] += 1
@@ -149,40 +122,70 @@ class LeaguePredictor:
                 f"Pts:{int(row['predicted_points'])}"
             )
 
-        # Save predictions
+        # Plotting section
         plots_dir = 'output/plots/league_analysis'
         os.makedirs(plots_dir, exist_ok=True)
-        
-        # Set style directly with seaborn
-        sns.set_style("whitegrid")
-        fig, ax = plt.subplots(figsize=(15, 10))
-        
-        # Create color palette
-        colors = sns.color_palette("husl", len(standings))
+
+        # Set professional style with white background
+        plt.style.use('seaborn-v0_8-darkgrid')
+        fig, ax = plt.subplots(figsize=(15, 10), facecolor='white')
+        ax.set_facecolor('#f8f9fa')
+
+        # Create professional color palette
+        # Using darker blue gradient for better visibility
+        n_teams = len(standings)
+        colors = plt.cm.YlOrRd(np.linspace(0.8, 0.3, n_teams))  # Darker gradient
+
+        # Create bars with professional colors
         bars = ax.bar(standings.index, standings['predicted_points'], color=colors)
-        
-        # Customize plot
-        ax.set_title(f'Predicted {league_name} Standings\nSeason 2016-17', pad=20, size=14)
-        ax.set_xlabel('Teams', labelpad=10)
-        ax.set_ylabel('Predicted Points', labelpad=10)
-        
+
+        # Customize plot with professional styling
+        ax.set_title(f'Predicted {league_name} Standings\nSeason 2016-17', 
+                     pad=20, 
+                     size=16, 
+                     fontweight='bold',
+                     color='#2f2f2f')
+
+        # Customize axes
+        ax.set_xlabel('Teams', labelpad=10, fontsize=12, color='#2f2f2f')
+        ax.set_ylabel('Predicted Points', labelpad=10, fontsize=12, color='#2f2f2f')
+
         # Rotate labels for better readability
-        plt.xticks(rotation=45, ha='right')
-        
-        # Add value labels on top of bars
+        plt.xticks(rotation=45, ha='right', fontsize=10, color='#2f2f2f')
+        plt.yticks(fontsize=10, color='#2f2f2f')
+
+        # Add value labels on bars with contrast check
         for bar in bars:
             height = bar.get_height()
+            color = 'white' if height > standings['predicted_points'].mean() else '#2f2f2f'
             ax.text(bar.get_x() + bar.get_width()/2., height,
                     f'{int(height)}',
-                    ha='center', va='bottom')
-        
+                    ha='center', va='bottom',
+                    fontsize=10,
+                    fontweight='bold',
+                    color=color)
+
+        # Add grid for better readability
+        ax.grid(True, axis='y', linestyle='--', alpha=0.2, color='#2f2f2f')
+
+        # Remove top and right spines
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_color('#2f2f2f')
+        ax.spines['bottom'].set_color('#2f2f2f')
+
+        # Adjust layout
         plt.tight_layout()
-        
-        # Save plot
+
+        # Save plot with high quality
         output_file = f'{plots_dir}/predicted_standings_{league_name.replace(" ", "_")}.png'
-        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.savefig(output_file, 
+                    dpi=300, 
+                    bbox_inches='tight',
+                    facecolor='white',
+                    edgecolor='none')
         plt.close()
-        
+
         logger.info(f"\nPredicted {league_name} Standings saved to: {output_file}")
         logger.info("\nTeam Rankings:")
         for idx, (team, row) in enumerate(standings.iterrows(), 1):
